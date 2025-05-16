@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Registration and Subject Selection</title>
+  <style>
+    body { background-color: cyan; font-family: Arial, sans-serif; margin: 20px; }
+    fieldset { margin-bottom: 15px; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input[type="text"], input[type="date"], select { width: 250px; padding: 5px; text-transform: uppercase; }
+    select option { text-transform: uppercase; }
+    .submit-btn, .print-btn { margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #photoPreview {
+      margin-top: 10px;
+      max-width: 150px;
+      max-height: 150px;
+      border: 2px solid #000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1><b>We are the World - Student Registration</b></h1>
+
+<form id="registrationForm" action="https://formsubmit.co/ngathosec9@gmail.com" method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="_captcha" value="false">
+
+  <label for="surname">SURNAME:</label>
+  <input type="text" id="surname" name="Surname" required>
+
+  <label for="firstname">First Name:</label>
+  <input type="text" id="firstname" name="First Name" required>
+
+  <label for="othername">Other Name:</label>
+  <input type="text" id="othername" name="Other Name">
+
+  <label for="photo">Upload Passport Photo:</label>
+  <input type="file" id="photo" name="photo" accept="image/*" required>
+  <img id="photoPreview" alt="Photo Preview">
+
+  <label for="admissionNo">Admission Number:</label>
+  <input type="text" id="admissionNo" name="Admission Number" required>
+
+  <label for="form">Form:</label>
+  <select id="form" name="Form" required>
+    <option value="">--SELECT FORM--</option>
+    <option value="Form 1">FORM 1</option>
+    <option value="Form 2">FORM 2</option>
+    <option value="Form 3">FORM 3</option>
+    <option value="Form 4">FORM 4</option>
+  </select>
+
+  <label for="stream">Stream:</label>
+  <select id="stream" name="Stream" required>
+    <option value="">--SELECT STREAM--</option>
+    <option value="K">K</option>
+    <option value="L">L</option>
+    <option value="Q">Q</option>
+  </select>
+
+  <label for="dob">Date of Birth (DD/MM/YYYY):</label>
+  <input type="date" id="dob" name="Date of Birth" required>
+
+  <label for="primarySchool">KCPE Primary School:</label>
+  <input type="text" id="primarySchool" name="KCPE Primary School" required>
+
+  <label for="parentName">Parent/Guardian's Name:</label>
+  <input type="text" id="parentName" name="Parent/Guardian Name" required>
+
+  <label for="parentPhone">Parent/Guardian's Phone Number:</label>
+  <input type="text" id="parentPhone" name="Parent/Guardian Phone" required pattern="\d{10}" placeholder="e.g., 0712345678">
+
+  <fieldset>
+    <legend><b>Subject Selection (codes included):</b></legend>
+
+    <fieldset>
+      <legend>Group 1: Compulsory Subjects</legend>
+      <input type="checkbox" name="Subjects" value="101 ENGLISH" checked disabled> 101 ENGLISH<br>
+      <input type="checkbox" name="Subjects" value="102 KISWAHILI" checked disabled> 102 KISWAHILI<br>
+      <input type="checkbox" name="Subjects" value="121 MATHEMATICS" checked disabled> 121 MATHEMATICS<br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Group 2: CHEMISTRY (COMPULSORY) + Choose 1 from BIOLOGY or PHYSICS</legend>
+      <input type="checkbox" name="Subjects" value="233 CHEMISTRY" checked disabled> 233 CHEMISTRY<br>
+      <input type="checkbox" class="group2" name="Subjects" value="231 BIOLOGY"> 231 BIOLOGY<br>
+      <input type="checkbox" class="group2" name="Subjects" value="232 PHYSICS"> 232 PHYSICS<br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Group 3: CRE (COMPULSORY) + Choose HISTORY or GEOGRAPHY</legend>
+      <input type="checkbox" name="Subjects" value="313 CRE" checked disabled> 313 CRE<br>
+      <input type="checkbox" class="group3" name="Subjects" value="311 HISTORY"> 311 HISTORY<br>
+      <input type="checkbox" class="group3" name="Subjects" value="312 GEOGRAPHY"> 312 GEOGRAPHY<br>
+    </fieldset>
+
+    <fieldset>
+      <legend>Groups 4 & 5: Choose 1</legend>
+      <input type="checkbox" class="group45" name="Subjects" value="443 AGRICULTURE"> 443 AGRICULTURE<br>
+      <input type="checkbox" class="group45" name="Subjects" value="451 COMPUTER STUDIES"> 451 COMPUTER STUDIES<br>
+      <input type="checkbox" class="group45" name="Subjects" value="565 BUSINESS STUDIES"> 565 BUSINESS STUDIES<br>
+    </fieldset>
+
+    <p><b>Total Subjects Selected:</b> <span id="subjectCount">0</span> / 8</p>
+  </fieldset>
+
+  <button type="submit" class="submit-btn">Submit Registration</button>
+  <button type="button" class="print-btn" onclick="window.print()">Print Form</button>
+</form>
+
+<script>
+  const compulsorySubjects = 5;
+  const requiredTotal = 8;
+
+  const group2 = document.querySelectorAll('.group2');
+  const group3 = document.querySelectorAll('.group3');
+  const group45 = document.querySelectorAll('.group45');
+  const subjectCountDisplay = document.getElementById('subjectCount');
+
+  function updateCount() {
+    let count = compulsorySubjects;
+    let group2Count = 0, group3Count = 0, group45Count = 0;
+
+    group2.forEach(cb => { if (cb.checked) group2Count++; });
+    group3.forEach(cb => { if (cb.checked) group3Count++; });
+    group45.forEach(cb => { if (cb.checked) group45Count++; });
+
+    count += group2Count + group3Count + group45Count;
+    subjectCountDisplay.textContent = count;
+
+    return { count, group2Count, group3Count, group45Count };
+  }
+
+  function enforceRules(e) {
+    const { group2Count, group3Count, group45Count } = updateCount();
+
+    if (group2Count > 1) {
+      alert("Choose only one subject between Biology and Physics.");
+      e.target.checked = false;
+    }
+    if (group3Count > 1) {
+      alert("Choose only one between History and Geography.");
+      e.target.checked = false;
+    }
+    if (group45Count > 1) {
+      alert("Choose only one subject from Group 4 & 5.");
+      e.target.checked = false;
+    }
+
+    updateCount();
+  }
+
+  [...group2, ...group3, ...group45].forEach(cb => cb.addEventListener('change', enforceRules));
+  updateCount();
+
+  const photo = document.getElementById('photo');
+  const photoPreview = document.getElementById('photoPreview');
+  photo.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        photoPreview.src = e.target.result;
+        photoPreview.style.display = 'block';
+      }
+      reader.readAsDataURL(file);
+    } else {
+      photoPreview.src = '';
+      photoPreview.style.display = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>
